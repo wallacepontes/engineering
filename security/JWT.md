@@ -1,0 +1,507 @@
+# JWT - JSON Web Token
+
+JSON web token (JWT) is an open standard (RFC 7519) that defines how to contain the information in a JSON format and communicate with different parties. There are many types of tokens used and JWT is just one of then and the most popular one.
+
+**JOSE - Json Object Signing and Encryption**
+1. JWT - JSON Web Token (RFC 7519)
+2. JWS - JSON Web Signature
+3. JWE - Json Web Encryption
+4. JWK - Json Web Keys
+5. JWA - Json Web Algorithms
+
+```mermaid
+%% graph TD;
+flowchart LR; 
+    JWT[JWT - JSON Web Token RFC 7519] -->|Contains| JWS[JWS - JSON Web Signature];
+    JWT -->|Contains| JWE[JWE - JSON Web Encryption];
+    JWT -->|May use| JWK[JWK - JSON Web Keys];
+    JWT -->|Contains| Header[Header];
+    JWT -->|Contains| Payload[Payload];
+    JWT -->|Contains| Signature[Signature];
+    JWS -->|Uses| JWK;
+    JWE -->|Uses| JWK;
+    JWK -->|Defines| JWA[JWA - JSON Web Algorithms];
+    style JWT fill:#FFD700,stroke:#000,stroke-width:2px;
+    style JWS fill:#ADD8E6,stroke:#000,stroke-width:2px;
+    style JWE fill:#90EE90,stroke:#000,stroke-width:2px;
+    style JWK fill:#FFA07A,stroke:#000,stroke-width:2px;
+    style JWA fill:#D3D3D3,stroke:#000,stroke-width:2px;
+    style Header fill:#87CEEB,stroke:#000,stroke-width:2px;
+    style Payload fill:#98FB98,stroke:#000,stroke-width:2px;
+    style Signature fill:#FFA07A,stroke:#000,stroke-width:2px;
+```
+
+
+
+**Claims (Header, Payload, Signature)**
+In a JSON Web Token (JWT), claims are pieces of information or attributes about the entity (typically a user) and additional metadata associated with the token. Claims are stored within the payload of the JWT and provide useful information to the recipient. There are three types of claims: **Reserved claims**, **Public claims**, and **Private claims**.
+
+1. **Reserved Claims**: These are predefined claims that have specific meanings and are recommended to be used in certain contexts. Some common reserved claims include:
+
+    - **iss (Issuer)**: Identifies the principal that issued the JWT. For example, it could be the identity provider or the authorization server.
+    - **sub (Subject)**: Identifies the subject of the JWT, typically representing the user or entity the JWT is about.
+    - **aud (Audience)**: Identifies the recipients that the JWT is intended for. It could be a single recipient or an array of recipients.
+    - **exp (Expiration Time)**: Specifies the expiration time of the JWT. After this time, the token should not be accepted for processing.
+    - **nbf (Not Before)**: Specifies the time before which the JWT must not be accepted for processing.
+    - **iat (Issued At)**: Specifies the time at which the JWT was issued.
+    - **jti (JWT ID)**: Provides a unique identifier for the JWT. It can be used to prevent the JWT from being replayed.
+
+2. **Public Claims**: These are claims that are defined in the JWT specification but are not reserved. They are meant to be defined and used by the parties involved in the communication but should be registered in the IANA JSON Web Token Claims registry to ensure interoperability.
+
+3. **Private Claims**: These are custom claims that are specific to the parties involved in the communication. They are not registered in the IANA JSON Web Token Claims registry and should be agreed upon between the parties.
+
+    Here's an example of a JWT payload containing claims:
+    ```json
+    {
+      "iss": "https://example.com",
+      "sub": "user123",
+      "aud": ["https://api.example.com", "https://app.example.com"],
+      "exp": 1672459482,
+      "iat": 1672455882,
+      "email": "user@example.com",
+      "role": "admin"
+    }
+    ```
+    In this example:
+    - **iss**: The issuer of the token is "https://example.com".
+    - **sub**: The subject of the token is "user123".
+    - **aud**: The token is intended for recipients "https://api.example.com" and "https://app.example.com".
+    - **exp**: The token will expire at the Unix time 1672459482.
+    - **iat**: The token was issued at the Unix time 1672455882.
+    - **email**: A custom claim indicating the email address of the user.
+    - **role**: A custom claim indicating the role of the user, in this case, "admin".
+
+These claims provide valuable information about the token and the user it represents, facilitating secure communication between parties.
+
+**Header**: The header typically consists of two parts: the type of token (typ) and the signing algorithm (alg). The header is encoded in Base64Url format and is part of the JWT's structure. It provides metadata about the JWT, including information about how the token is signed or encrypted.
+
+    Here's an example of a JWT header:
+    ```json
+    {
+      "typ": "JWT",
+      "alg": "HS256"
+    }
+    ```
+    In this example:
+    - **typ**: Specifies the type of token, which is JWT in this case.
+    - **alg**: Specifies the algorithm used to sign or encrypt the token, which is HMAC SHA-256 (HS256) in this case.
+
+**Signature**: The signature is generated by taking the encoded header, the encoded payload, and a secret (in case of symmetric algorithms like HMAC) or a private key (in case of asymmetric algorithms like RSA), and then applying a cryptographic algorithm specified in the header. The signature ensures the integrity and authenticity of the JWT, allowing the recipient to verify that the token has not been tampered with.
+
+    Here's an example of a JWT signature (in Base64Url format):
+    ```
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwiaWF0IjoxNTE2MjM5MDIyfQ.-rcP7T3zB7p3sdwSs1-xJSXVvx_lmsK5Jsl6q82wNwQ
+    ```
+    This signature is generated using the HS256 algorithm, and it verifies the integrity of the JWT.
+
+Combining the header, payload, and signature, a JWT looks like this:
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwiaWF0IjoxNTE2MjM5MDIyfQ.-rcP7T3zB7p3sdwSs1-xJSXVvx_lmsK5Jsl6q82wNwQ
+```
+
+In this JWT:
+- The header specifies that it is a JWT (typ: JWT) and the algorithm used is HMAC SHA-256 (alg: HS256).
+- The payload contains the claims, such as the subject (sub) and the issued at time (iat).
+- The signature ensures the integrity and authenticity of the token.
+
+1.  Header (coded by Base64Url)
+{
+	"alg": "HS256", -- HMAC, SHA256, RSA
+	"typ": "JWT"
+}
+or
+{
+	"alg": "HS256", -- HMAC, SHA256, RSA
+	"typ": "JWT",
+	"cty": "JWT"
+}
+
+
+1. Signature
+
+This sequence is made with both encoded header and Payload plus a key word
+
+HMACSHA256(
+	base64UrlEncode(header) + "." +
+	base64UrlEncode(payload),
+	secret)
+
+* HMAC
+* RSA
+* ECDSA
+* JSON
+
+* Authentication
+* Authorization
+* Information exchange
+
+
+### Other options
+
+1. SWT - Simple Web Tokens
+2. SAML - Security Assertion Markup Language Tokens
+
+### Token
+
+1. 2FA - Two-Factor Authentication
+2. One time password
+3. Hashed Message Authentication code (Time Based or Event Counter)
+
+Google Authenticator
+
+1. AccessToken
+2. BearerToken (OAuth2)
+3. API Key
+
+* Message Authentication Code Tokens (MAC)
+* Id Token
+* Refresh Tokens
+
+## Considering the most common encryption algorithms (e.g., AES, RSA), please tell us what are their strengths and weaknesses and key strength a rotation are important. 
+### Common Encryption Algorithms: Strengths and Weaknesses
+
+#### 1. AES (Advanced Encryption Standard)
+
+**Strengths:**
+- **Efficiency:** AES is highly efficient in both hardware and software implementations, making it suitable for a wide range of applications.
+- **Security:** AES is considered very secure, especially with 256-bit keys. It has withstood extensive cryptographic analysis and is widely trusted.
+- **Flexibility:** Supports various key lengths (128, 192, and 256 bits) and is versatile for different security needs.
+- **Speed:** AES performs encryption and decryption quickly, which is crucial for real-time applications.
+
+**Weaknesses:**
+- **Key Management:** Securely managing and distributing keys can be challenging, especially in distributed systems.
+- **Symmetric Nature:** Both parties must share the same key, which necessitates a secure channel for key exchange.
+
+#### 2. RSA (Rivest–Shamir–Adleman)
+
+**Strengths:**
+- **Asymmetric Encryption:** Uses a pair of keys (public and private), facilitating secure key exchange without a pre-shared secret.
+- **Digital Signatures:** RSA is widely used for digital signatures, ensuring the authenticity and integrity of messages.
+- **Compatibility:** RSA is well-established and supported across many platforms and protocols.
+
+**Weaknesses:**
+- **Performance:** RSA is significantly slower than symmetric algorithms like AES, especially for large amounts of data.
+- **Key Size:** To achieve a high level of security, RSA requires much larger key sizes (e.g., 2048 or 4096 bits) compared to AES, which can impact performance and computational overhead.
+- **Vulnerability to Quantum Computing:** RSA is more susceptible to attacks by quantum computers, which could potentially break its encryption in the future.
+
+### Importance of Key Strength and Key Rotation
+
+#### Key Strength
+**Key strength** refers to the size (in bits) and the complexity of the cryptographic key used in an encryption algorithm. The strength of a key determines the difficulty for an attacker to perform a brute-force attack to decrypt the data.
+
+**Key Strength Recommendations:**
+- **AES:** Commonly used key sizes are 128, 192, and 256 bits. For most applications, 128-bit keys provide sufficient security, but 256-bit keys are recommended for highly sensitive data.
+- **RSA:** A minimum of 2048-bit keys is recommended for most applications, while 3072 or 4096-bit keys are suggested for higher security.
+
+#### Key Rotation
+**Key rotation** involves periodically changing the cryptographic keys used for encryption and decryption. This practice is crucial for maintaining the security of encrypted data over time.
+
+**Importance of Key Rotation:**
+- **Limits Exposure:** Regularly rotating keys minimizes the amount of data that could be compromised if a key is exposed.
+- **Mitigates Risk of Key Compromise:** If a key is suspected to be compromised, rotating keys can quickly mitigate the risk by replacing the potentially compromised key.
+- **Compliance:** Many industry standards and regulations (e.g., PCI DSS, GDPR) require regular key rotation to ensure ongoing data protection.
+- **Prevents Long-term Attacks:** Frequent key changes make it difficult for attackers to perform long-term cryptographic attacks, such as brute-force or cryptanalysis attempts.
+
+### Implementing Key Rotation
+
+**Best Practices for Key Rotation:**
+1. **Automated Key Management Systems:** Use automated systems for managing key generation, distribution, and rotation to reduce human error and ensure consistency.
+2. **Graceful Key Transition:** Implement mechanisms that allow both old and new keys to coexist during the transition period to avoid data access issues.
+3. **Audit and Logging:** Maintain logs of key rotation activities and perform regular audits to ensure compliance with security policies and regulations.
+4. **Secure Key Storage:** Use hardware security modules (HSMs) or other secure storage solutions to protect keys from unauthorized access.
+
+### Conclusion
+
+Understanding the strengths and weaknesses of common encryption algorithms like AES and RSA, along with the importance of key strength and rotation, is crucial for maintaining data security. AES is preferred for its efficiency and security in symmetric encryption, while RSA is essential for secure key exchange and digital signatures. Regular key rotation is a fundamental practice to enhance security and ensure compliance with standards, helping to protect data against evolving threats.
+
+## How to do a Secure Authorization with RSA, AES and JWT?
+
+Implementing secure authorization using RSA, AES, and JWT (JSON Web Tokens) involves leveraging the strengths of each technology to ensure data integrity, confidentiality, and secure authentication and authorization. Here's a step-by-step guide on how to achieve this:
+
+### 1. Understand the Role of Each Technology
+
+- **RSA:** Used for secure key exchange and digital signatures.
+- **AES:** Used for encrypting data to ensure confidentiality.
+- **JWT:** Used for securely transmitting information between parties as a JSON object, typically including claims about the user.
+
+### 2. Set Up Your Environment
+
+Ensure your environment is set up with the necessary libraries and tools for handling RSA, AES, and JWT. For example, in a Java-based Spring Boot application, you might use libraries like `spring-security`, `jjwt` for JWT handling, and `BouncyCastle` for cryptographic operations.
+
+### 3. Generate RSA Key Pair
+
+Generate an RSA key pair (public and private keys) for signing and verifying JWTs.
+
+```java
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+
+public class KeyGeneratorUtils {
+
+    public static KeyPair generateRSAKey() {
+        KeyPair keyPair = null;
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048);
+            keyPair = keyPairGenerator.generateKeyPair();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return keyPair;
+    }
+}
+```
+
+### 4. Configure JWT with RSA Signing
+
+Configure your JWT tokens to be signed using the RSA private key and verified using the RSA public key.
+
+```java
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.security.KeyPair;
+import java.util.Date;
+
+public class JwtUtils {
+
+    private static final KeyPair keyPair = KeyGeneratorUtils.generateRSAKey();
+    private static final long EXPIRATION_TIME = 864_000_000; // 10 days
+
+    public static String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256)
+                .compact();
+    }
+
+    public static boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                .setSigningKey(keyPair.getPublic())
+                .build()
+                .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getUsernameFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(keyPair.getPublic())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+}
+```
+
+### 5. Encrypt Sensitive Data with AES
+
+Encrypt sensitive data using AES before storing it in the JWT token to ensure confidentiality.
+
+```java
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+
+public class AesUtils {
+
+    private static final String ALGORITHM = "AES";
+
+    public static SecretKey generateAESKey() throws Exception {
+        KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM);
+        keyGen.init(256);
+        return keyGen.generateKey();
+    }
+
+    public static String encrypt(String data, SecretKey key) throws Exception {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encryptedData = cipher.doFinal(data.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedData);
+    }
+
+    public static String decrypt(String encryptedData, SecretKey key) throws Exception {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decodedData = Base64.getDecoder().decode(encryptedData);
+        byte[] originalData = cipher.doFinal(decodedData);
+        return new String(originalData);
+    }
+}
+```
+
+### 6. Integrate with Spring Security
+
+Configure Spring Security to use JWT for authentication and authorization.
+
+#### Security Configuration
+
+```java
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/api/public/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+            .addFilter(new JwtAuthorizationFilter(authenticationManager()))
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+}
+```
+
+#### JWT Authentication Filter
+
+```java
+import io.jsonwebtoken.Jwts;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    private final AuthenticationManager authenticationManager;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
+        try {
+            UserCredentials creds = new ObjectMapper().readValue(req.getInputStream(), UserCredentials.class);
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(creds.getUsername(), creds.getPassword(), new ArrayList<>())
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
+        String token = JwtUtils.generateToken(((User) auth.getPrincipal()).getUsername());
+        res.addHeader("Authorization", "Bearer " + token);
+    }
+}
+```
+
+#### JWT Authorization Filter
+
+```java
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+
+    public JwtAuthorizationFilter(AuthenticationManager authManager) {
+        super(authManager);
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String header = request.getHeader("Authorization");
+
+        if (header == null || !header.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        String token = header.replace("Bearer ", "");
+        if (JwtUtils.validateToken(token)) {
+            String username = JwtUtils.getUsernameFromToken(token);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        chain.doFilter(request, response);
+    }
+}
+```
+
+### 7. Secure Authorization Logic
+
+#### Encrypting Sensitive Information
+
+Before adding sensitive information to the JWT token, encrypt it using AES.
+
+```java
+public static String generateToken(String username, SecretKey aesKey) {
+    String encryptedUsername = AesUtils.encrypt(username, aesKey);
+    return Jwts.builder()
+            .setSubject(encryptedUsername)
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256)
+            .compact();
+}
+
+public static String getUsernameFromToken(String token, SecretKey aesKey) {
+    String encryptedUsername = Jwts.parserBuilder()
+            .setSigningKey(keyPair.getPublic())
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
+    return AesUtils.decrypt(encryptedUsername, aesKey);
+}
+```
+
+### 8. Key Management
+
+Manage your keys securely. Rotate keys periodically and ensure they are stored securely, using tools like AWS KMS, Azure Key Vault, or HashiCorp Vault.
+
+### 9. Testing and Deployment
+
+Thoroughly test your implementation to ensure it meets security requirements. Deploy your application and monitor it for any potential security issues.
+
+By following these steps, you can securely implement authorization using RSA, AES, and JWT in a Spring Boot application. This approach leverages the strengths of each technology to ensure secure key exchange, data encryption, and secure transmission of user information.
+ 
+## Videos
+ * [Token // Dicionário do Programador](https://www.youtube.com/watch?v=LtVb9rhU41c)
+	> [<img src="https://img.youtube.com/vi/LtVb9rhU41c/0.jpg" width="200">](https://www.youtube.com/watch?v=LtVb9rhU41c "Token // Dicionário do Programador by Código Fonte TV 69,205 views 8 minutes, 7 seconds")
+ * [JWT (JSON Web Token - Autenticação e Segurança) // Dicionário do Programador](https://www.youtube.com/watch?v=Gyq-yeot8qM)
+	> [<img src="https://img.youtube.com/vi/Gyq-yeot8qM/0.jpg" width="200">](https://www.youtube.com/watch?v=Gyq-yeot8qM "JWT (JSON Web Token - Autenticação e Segurança) // Dicionário do Programador by Código Fonte TV 46,186 views 10 minutes, 7 seconds")
+ * [O que é JWT?](https://www.youtube.com/watch?v=OyfyE6L_A-U)
+	> [<img src="https://img.youtube.com/vi/OyfyE6L_A-U/0.jpg" width="200">](https://www.youtube.com/watch?v=OyfyE6L_A-U "O que é JWT? by EstudeCê 141 views 6 minutes, 25 seconds")
+ * [Spring Cloud API Gateway | JWT Security  | Pass UserDetails to Microservices | JavaTechie](https://www.youtube.com/watch?v=qODoDq5_hAM)
+	> [<img src="https://img.youtube.com/vi/qODoDq5_hAM/0.jpg" width="200">](https://www.youtube.com/watch?v=qODoDq5_hAM "Spring Cloud API Gateway | JWT Security  | Pass UserDetails to Microservices | JavaTechie by Java Techie 47,537 views 15 minutes")
+ * [Spring Cloud API Gateway | JWT Security  | Pass UserDetails to Microservices | JavaTechie](https://www.youtube.com/watch?v=qODoDq5_hAM)
+	> [<img src="https://img.youtube.com/vi/qODoDq5_hAM/0.jpg" width="200">](https://www.youtube.com/watch?v=qODoDq5_hAM "Spring Cloud API Gateway | JWT Security  | Pass UserDetails to Microservices | JavaTechie by Java Techie 47,537 views 15 minutes")
+ * [Microservices Security Using JWT | Spring Cloud  Gateway | JavaTechie](https://www.youtube.com/watch?v=MWvnmyLRUik)
+	> [<img src="https://img.youtube.com/vi/MWvnmyLRUik/0.jpg" width="200">](https://www.youtube.com/watch?v=MWvnmyLRUik "Microservices Security Using JWT | Spring Cloud  Gateway | JavaTechie by Java Techie 118,879 views 1 hour, 25 minutes")
+ * [Autenticação e Autorização com Spring Security e JWT Tokens](https://www.youtube.com/watch?v=5w-YCcOjPD0)
+	> [<img src="https://img.youtube.com/vi/5w-YCcOjPD0/0.jpg" width="200">](https://www.youtube.com/watch?v=5w-YCcOjPD0 "Autenticação e Autorização com Spring Security e JWT Tokens by Fernanda Kipper | Dev 67,999 views 1 hour, 15 minutes")
+ * [Spring Boot 3.1.5 - Spring Authorization Server 1.1.3 - Custom Password Grant Type](https://www.youtube.com/watch?v=HdSktctSplc)
+	> [<img src="https://img.youtube.com/vi/HdSktctSplc/0.jpg" width="200">](https://www.youtube.com/watch?v=HdSktctSplc "Spring Boot 3.1.5 - Spring Authorization Server 1.1.3 - Custom Password Grant Type by Spring Boot TUTORIAL. 1,317 views 11 minutes, 10 seconds")
+
+## References
+
