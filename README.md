@@ -8,11 +8,13 @@ This repository is a comprehensive guide to building, deploying, and securing mo
 
 *The "Architect's Office." High-level patterns and interview prep. Architectural blueprints and mental models. From C4 diagrams to industry-standard engineering blogs.*
 
-### ☁️ [02_Infrastructure](./02_Infrastructure_and_Containers)
+### ☁️ [02_Infrastructure_and_Cloud](./02_Infrastructure_and_Containers)
 
 *The "Engine Room." Compute, virtualization, and IaC. The backbone: Kubernetes, Docker, and Infrastructure as Code (Terraform/Ansible).*
 
-### 🚀 [03_CI_CD](./03_CI_CD_and_Automation)
+![alt text](img/02_Infrastructure_and_Cloud.png)
+
+### 🚀 [03_Dev_Process_and_Automation](./03_CI_CD_and_Automation)
 
 *The "Assembly Line." Shipping code reliably. Automation workflows using Jenkins and GitOps patterns with ArgoCD.*
 
