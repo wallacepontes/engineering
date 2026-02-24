@@ -40,4 +40,4 @@ Here’s a breakdown of each command and how you can use it:
 
 Keep it handy, and you'll find that these commands become second nature as you navigate through your daily tasks.
 
-![Log Parsing](./img/x/Brij%20kishore%20Pandey/Log%20Parsing%20Cheatsheet.gif)
+![Log Parsing](<../img/x/Brij kishore Pandey/Log Parsing Cheatsheet.gif>)

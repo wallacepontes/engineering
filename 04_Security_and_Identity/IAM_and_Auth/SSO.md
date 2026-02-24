@@ -56,7 +56,7 @@ graph TD
 
 ```
 
-![SSO (Single Sign-On)](./img/Security/SSO.gif)
+![SSO (Single Sign-On)](../../security/img/Security/SSO.gif)
 
 ## What is SSO (Single Sign-On)?
 
@@ -74,7 +74,7 @@ Steps 9-10: YouTube finds the user is not logged in and sends the token to the S
 
 Steps 11-14: YouTube validates the token with the SSO authentication server. The authentication server registers the YouTube system and returns "valid." YouTube then returns the protected resource to the user. The process is complete, and the user gains access to their account without needing to log in again.
 
-![How does SSO Work?](./img/Security/SSO-Works.jpg)
+![How does SSO Work?](../../security/img/Security/SSO-Works.jpg)
 
 ## References
 1. https://www.linkedin.com/in/sahnlam/recent-activity/all/

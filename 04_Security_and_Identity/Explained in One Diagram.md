@@ -18,4 +18,4 @@ When you login to a website, your identity needs to be managed. Here is how diff
  
 Over to you: QR code logins are gaining popularity. Do you know how it works? 
 
-![HTTP Status COde](./img/Security/OneDiagramForAll.gif)
+![HTTP Status COde](../security/img/Security/OneDiagramForAll.gif)

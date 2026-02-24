@@ -23,7 +23,7 @@ When an encrypted message is received, the receiver uses their private key to un
 
 End-to-end encryption is only as powerful as the cryptographic algorithms used, and how well they are implemented. When done right, E2EE boosts the security of digital communications, protecting them from eavesdropping and tampering.
 
-![End-to-end encryption (E2EE)](./img/Security/E2EE.jpg)
+![End-to-end encryption (E2EE)](../../security/img/Security/E2EE.jpg)
 
 
 ## End-to-end encryption (E2EE)

@@ -26,7 +26,7 @@ This analogy can make it easier for people to understand the fundamental compone
 
 Kubernetes is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications, allowing for seamless and efficient container orchestration in a cluster of machines.
 
-![Kubernetes](./img/x/sahnlam/Kubernetes.jpg)
+![Kubernetes](../img/x/sahnlam/Kubernetes.jpg)
 
 Let's break it down using a familiar scenario: a restaurant!
 
